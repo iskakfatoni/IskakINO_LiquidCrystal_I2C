@@ -39,6 +39,8 @@ void setup() {
 void loop() {
 }
 
+---
+
 ## More Examples
 This library includes several ready-to-use examples to help you get started quickly:
 - **Basic**

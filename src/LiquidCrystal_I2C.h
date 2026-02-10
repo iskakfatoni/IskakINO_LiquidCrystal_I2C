@@ -112,6 +112,11 @@ public:
     void noBlink();
     void scrollDisplayLeft();
     void scrollDisplayRight();
+    void leftToRight();
+    void rightToLeft();
+    void autoscroll();
+    void noAutoscroll();
+
 
     void setAddress(uint8_t addr);   // 🔧 NEW (optional)
     uint8_t getAddress();            // 🔧 NEW (optional)

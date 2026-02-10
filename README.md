@@ -135,13 +135,18 @@ designed to demonstrate **proper, efficient, and non-blocking usage of LCDs**.
   Ideal for ESP32 IoT dashboards.
 
 ### 📂 Example Folder Structure
+```
 examples/
-```├── Basic/
-```├── Scroll_and_Autoscroll/
-```├── Ticker_Text/
-```├── Advanced_CustomChar_ProgressBar/
-```└── Scroll_with_ProgressBar/
-
+├── Basic/
+    Basic.ino
+├── Scroll_and_Autoscroll/
+    Scroll_and_Autoscroll.ino
+├── Ticker_Text/
+    Ticker_Text.ino
+├── Advanced_CustomChar_ProgressBar/
+    Advanced_CustomChar_ProgressBar.ino
+├── Scroll_with_ProgressBar/
+    Scroll_with_ProgressBar.ino
 ```
 ## 🔁 API Compatibility
 

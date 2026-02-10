@@ -101,6 +101,10 @@ public:
 
     void backlight();
     void noBacklight();
+    void cursor();
+    void noCursor();
+    void blink();
+    void noBlink();
 
     void setAddress(uint8_t addr);   // 🔧 NEW (optional)
     uint8_t getAddress();            // 🔧 NEW (optional)

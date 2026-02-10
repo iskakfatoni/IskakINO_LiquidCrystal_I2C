@@ -120,6 +120,8 @@ public:
 
     void setAddress(uint8_t addr);   // 🔧 NEW (optional)
     uint8_t getAddress();            // 🔧 NEW (optional)
+    uint8_t getAddress() const;
+
     //void createChar(uint8_t location, uint8_t charmap[]);
     void createChar(uint8_t location, const uint8_t charmap[]);
 

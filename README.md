@@ -23,6 +23,7 @@ Designed to be:
 - [Wiring](#-wiring)
 - [Basic Usage](#-basic-usage)
 - [Showcase Examples](#-showcase-examples)
+- [More Examples](#-more-examples)
 - [API Compatibility](#-api-compatibility)
 - [Versioning](#-versioning)
 - [License](#-license)
@@ -102,6 +103,8 @@ void loop() {
 }
 ```
 
+---
+
 ## 🎬 Showcase Examples
 
 This library provides examples **from basic to advanced**,  
@@ -134,6 +137,38 @@ designed to demonstrate **proper, efficient, and non-blocking usage of LCDs**.
   - non-blocking updates  
   Ideal for ESP32 IoT dashboards.
 
+---
+
+## 📚 More Examples
+
+In addition to the basic usage, this library includes several example sketches demonstrating advanced features:
+
+### Basic
+- **Basic** – Simple text display and automatic I2C address detection.  
+- **Backlight_On_Off_Demo** – Demonstrates turning the LCD backlight on and off.  
+- **CursorDisplay_Cursor_Display_Control** – Demonstrates cursor and display control functions (`cursor()`, `noCursor()`, `blink()`, `noBlink()`, `display()`, `noDisplay()`).  
+- **ESP32_Custom_I2C_Pins** – Example for using custom I2C pins on ESP32 / ESP32-C3 boards.  
+- **SetAddress_Manual_I2C_Address** – Demonstrates manually setting the LCD I2C address instead of auto-detection.
+
+### Intermediate
+- **Scroll_and_Autoscroll** – Demonstrates `scrollDisplayLeft()`, `scrollDisplayRight()`, `autoscroll()`, and text direction control.  
+- **Ticker_Text** – Smooth running text (ticker) using `millis()` without `delay()` and without clearing the display.  
+- **LCD_Clock** – Shows a real-time clock or timer using `millis()` (non-blocking).  
+- **Temperature_Humidity_Display** – Integrates DHT11/DHT22 sensor to display temperature and humidity, optionally with progress bars.
+
+### Advanced
+- **Advanced_CustomChar_ProgressBar** – Custom character (CGRAM) for smooth progress bars without flickering.  
+- **Scroll_with_ProgressBar** – Combines scrolling text with a progress bar for non-blocking dashboards.  
+- **Menu_Navigation** – Interactive menu using buttons or rotary encoder, with cursor/highlight support.  
+- **Battery_Voltage_Indicator** – Displays battery percentage with progress bar, updated in real-time.  
+- **Scrolling_Notifications** – Vertical or horizontal scrolling notifications, smooth ticker effect.  
+- **Advanced_NonBlocking_Dashboard** – Complete dashboard combining multiple elements: scrolling text, progress bars, sensors, and live updates without blocking.
+
+> Each example is located in its respective folder under the `examples/` directory.  
+> Use these examples to explore different LCD features: scrolling, autoscroll, custom characters, progress bars, interactive menus, sensor integration, backlight control, and non-blocking updates.
+
+---
+
 ### 📂 Example Folder Structure
 ```
 examples/
@@ -148,6 +183,9 @@ examples/
 ├── Scroll_with_ProgressBar/
     Scroll_with_ProgressBar.ino
 ```
+
+---
+
 ## 🔁 API Compatibility
 
 This library is designed to be **100% backward compatible** with popular APIs:
@@ -206,6 +244,7 @@ Connect your HD44780 LCD with I2C backpack to your board as follows:
 ⚠️ **Note:**  
 Legacy API calls remain fully functional.
 
+---
 
 ## 🏷 Versioning
 This library uses **Semantic Versioning**:
@@ -220,34 +259,7 @@ MAJOR.MINOR.PATCH
 
 Breaking changes will **not be introduced** in the 1.x series.
 
-## 📚 More Examples
-
-In addition to the basic usage, this library includes several example sketches demonstrating advanced features:
-
-### Basic
-- **Basic** – Simple text display and automatic I2C address detection.  
-- **Backlight_On_Off_Demo** – Demonstrates turning the LCD backlight on and off.  
-- **CursorDisplay_Cursor_Display_Control** – Demonstrates cursor and display control functions (`cursor()`, `noCursor()`, `blink()`, `noBlink()`, `display()`, `noDisplay()`).  
-- **ESP32_Custom_I2C_Pins** – Example for using custom I2C pins on ESP32 / ESP32-C3 boards.  
-- **SetAddress_Manual_I2C_Address** – Demonstrates manually setting the LCD I2C address instead of auto-detection.
-
-### Intermediate
-- **Scroll_and_Autoscroll** – Demonstrates `scrollDisplayLeft()`, `scrollDisplayRight()`, `autoscroll()`, and text direction control.  
-- **Ticker_Text** – Smooth running text (ticker) using `millis()` without `delay()` and without clearing the display.  
-- **LCD_Clock** – Shows a real-time clock or timer using `millis()` (non-blocking).  
-- **Temperature_Humidity_Display** – Integrates DHT11/DHT22 sensor to display temperature and humidity, optionally with progress bars.
-
-### Advanced
-- **Advanced_CustomChar_ProgressBar** – Custom character (CGRAM) for smooth progress bars without flickering.  
-- **Scroll_with_ProgressBar** – Combines scrolling text with a progress bar for non-blocking dashboards.  
-- **Menu_Navigation** – Interactive menu using buttons or rotary encoder, with cursor/highlight support.  
-- **Battery_Voltage_Indicator** – Displays battery percentage with progress bar, updated in real-time.  
-- **Scrolling_Notifications** – Vertical or horizontal scrolling notifications, smooth ticker effect.  
-- **Advanced_NonBlocking_Dashboard** – Complete dashboard combining multiple elements: scrolling text, progress bars, sensors, and live updates without blocking.
-
-> Each example is located in its respective folder under the `examples/` directory.  
-> Use these examples to explore different LCD features: scrolling, autoscroll, custom characters, progress bars, interactive menus, sensor integration, backlight control, and non-blocking updates.
-
+---
 
 ## 📜 License
 

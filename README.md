@@ -141,10 +141,10 @@ designed to demonstrate **proper, efficient, and non-blocking usage of LCDs**.
 
 ## 📚 More Examples
 
-In addition to the basic usage, this library includes several example sketches demonstrating advanced features:
+In addition to the basic usage, this library provides multiple example sketches demonstrating various LCD features from simple text to advanced dashboards.
 
 ### Basic
-- **Basic** – Simple text display and automatic I2C address detection.  
+- **Basic** – Simple text display with automatic I2C address detection.  
 - **Backlight_On_Off_Demo** – Demonstrates turning the LCD backlight on and off.  
 - **CursorDisplay_Cursor_Display_Control** – Demonstrates cursor and display control functions (`cursor()`, `noCursor()`, `blink()`, `noBlink()`, `display()`, `noDisplay()`).  
 - **ESP32_Custom_I2C_Pins** – Example for using custom I2C pins on ESP32 / ESP32-C3 boards.  
@@ -153,7 +153,7 @@ In addition to the basic usage, this library includes several example sketches d
 ### Intermediate
 - **Scroll_and_Autoscroll** – Demonstrates `scrollDisplayLeft()`, `scrollDisplayRight()`, `autoscroll()`, and text direction control.  
 - **Ticker_Text** – Smooth running text (ticker) using `millis()` without `delay()` and without clearing the display.  
-- **LCD_Clock** – Shows a real-time clock or timer using `millis()` (non-blocking).  
+- **LCD_Clock** – Real-time clock or timer using `millis()` (non-blocking).  
 - **Temperature_Humidity_Display** – Integrates DHT11/DHT22 sensor to display temperature and humidity, optionally with progress bars.
 
 ### Advanced
@@ -162,10 +162,14 @@ In addition to the basic usage, this library includes several example sketches d
 - **Menu_Navigation** – Interactive menu using buttons or rotary encoder, with cursor/highlight support.  
 - **Battery_Voltage_Indicator** – Displays battery percentage with progress bar, updated in real-time.  
 - **Scrolling_Notifications** – Vertical or horizontal scrolling notifications, smooth ticker effect.  
-- **Advanced_NonBlocking_Dashboard** – Complete dashboard combining multiple elements: scrolling text, progress bars, sensors, and live updates without blocking.
+- **Advanced_NonBlocking_Dashboard** – Complete dashboard combining multiple elements: scrolling text, progress bars, sensors, and live updates without blocking.  
+- **Multi_Line_Dashboard** – 20x4 multi-line dashboard with Temperature, Humidity, Water Level, Battery, Status line, non-blocking updates, and progress bars.  
+- **Multi_Line_Dashboard_with_Scrolling_Ticker** – Multi-line dashboard with line 4 scrolling ticker, non-blocking, progress bars, and status updates.  
+- **Advanced_Dashboard_Example** – Flagship dashboard example demonstrating advanced LCD features: custom characters, scrolling text, progress bars, cursor blink, backlight toggle.  
+- **Advanced_Multi-Sensor_Dashboard_with_Alarm** – Full-featured advanced dashboard: 4–5 sensors displayed, scrolling ticker, alarm indicator, backlight toggle, cursor blink, non-blocking updates.
 
 > Each example is located in its respective folder under the `examples/` directory.  
-> Use these examples to explore different LCD features: scrolling, autoscroll, custom characters, progress bars, interactive menus, sensor integration, backlight control, and non-blocking updates.
+> Use these examples to explore different LCD features: scrolling, autoscroll, custom characters, progress bars, interactive menus, sensor integration, backlight control, and non-blocking dashboards.
 
 ---
 

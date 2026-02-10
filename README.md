@@ -64,14 +64,22 @@ Designed to be:
 
 ## 🔌 Wiring
 
-| LCD I2C | Arduino / ESP32 |
-|------|----------------|
-| SDA | SDA |
-| SCL | SCL |
-| VCC | 5V / 3.3V |
-| GND | GND |
+Connect your HD44780 LCD with I2C backpack (PCF8574 / PCF8574A) to your board as follows:
 
-> ESP32 default: SDA = GPIO21, SCL = GPIO22
+| LCD I2C Pin | Arduino / ESP32 | ESP32-C3 | NodeMCU (ESP8266) | Wemos D1 |
+|------------|----------------|-----------|------------------|----------|
+| SDA        | SDA             | GPIO20    | D2 (GPIO4)       | D2 (GPIO4) |
+| SCL        | SCL             | GPIO21    | D1 (GPIO5)       | D1 (GPIO5) |
+| VCC        | 5V (or 3.3V)   | 3.3V      | 3.3V             | 3.3V      |
+| GND        | GND             | GND       | GND              | GND       |
+
+> **Notes:**  
+> - Arduino default: SDA/A4, SCL/A5 (Mega varies)  
+> - ESP32 default: SDA = GPIO21, SCL = GPIO22 (can be changed using `Wire.begin(SDA, SCL);`)  
+> - ESP32-C3 default: SDA = GPIO20, SCL = GPIO21 (can be changed in `Wire.begin()`)  
+> - NodeMCU default: SDA = D2 (GPIO4), SCL = D1 (GPIO5)  
+> - Wemos D1 default: SDA = D2 (GPIO4), SCL = D1 (GPIO5)  
+> - Make sure VCC voltage matches your LCD and I2C backpack (3.3V for ESP32 / ESP32-C3 / NodeMCU / Wemos D1, 5V for Arduino)  
 
 ---
 

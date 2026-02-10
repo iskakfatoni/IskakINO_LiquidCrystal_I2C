@@ -136,11 +136,11 @@ designed to demonstrate **proper, efficient, and non-blocking usage of LCDs**.
 
 ### 📂 Example Folder Structure
 examples/
-├── Basic/
-├── Scroll_and_Autoscroll/
-├── Ticker_Text/
-├── Advanced_CustomChar_ProgressBar/
-└── Scroll_with_ProgressBar/
+    ├── Basic/
+    ├── Scroll_and_Autoscroll/
+    ├── Ticker_Text/
+    ├── Advanced_CustomChar_ProgressBar/
+    └── Scroll_with_ProgressBar/
 
 
 ## 🔁 API Compatibility

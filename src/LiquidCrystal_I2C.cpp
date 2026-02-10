@@ -35,7 +35,7 @@ void LiquidCrystal_I2C::createChar(uint8_t location, const uint8_t charmap[]) {
     }
 }
 
-uint8_t LiquidCrystal_I2C::getAddress() {
+uint8_t LiquidCrystal_I2C::getAddress() const {
     return _addr;
 }
 

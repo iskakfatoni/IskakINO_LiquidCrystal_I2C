@@ -86,6 +86,8 @@ public:
     void init();
     void autoBegin();
     void autoAddress();
+    void setAddress(uint8_t addr);
+    uint8_t getAddress();
 
     void clear();
     void home();

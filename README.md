@@ -92,3 +92,97 @@ void setup() {
 
 void loop() {
 }
+```
+
+## 🎬 Showcase Examples
+
+Library ini menyediakan example **dari basic hingga advanced**,  
+dirancang untuk menunjukkan **penggunaan LCD yang benar, efisien, dan non-blocking**.
+
+### 📌 Basic
+- **Basic**  
+  Menampilkan teks sederhana di LCD dan memastikan wiring serta alamat I2C terdeteksi otomatis.
+
+### ⚙️ Intermediate
+- **Scroll_and_Autoscroll**  
+  Demonstrasi:
+  - `scrollDisplayLeft()`  
+  - `scrollDisplayRight()`  
+  - `autoscroll()`  
+  - `leftToRight()` / `rightToLeft()`
+
+- **Ticker_Text**  
+  Running text (ticker) halus berbasis `millis()`  
+  tanpa `delay()` dan tanpa `lcd.clear()`.
+
+### 🚀 Advanced
+- **Advanced_CustomChar_ProgressBar**  
+  Penggunaan **custom character (CGRAM)** untuk membuat progress bar halus tanpa flicker.
+
+- **Scroll_with_ProgressBar**  
+  Showcase UI LCD yang menggabungkan:
+  - scrolling text  
+  - progress bar  
+  - non-blocking update  
+  Cocok untuk dashboard IoT ESP32.
+
+### 📂 Struktur Folder Example
+examples/
+├── Basic/
+├── Scroll_and_Autoscroll/
+├── Ticker_Text/
+├── Advanced_CustomChar_ProgressBar/
+└── Scroll_with_ProgressBar/
+
+
+## 🔁 API Compatibility
+
+Library ini dirancang **100% backward compatible** dengan API populer:
+
+LiquidCrystal_I2C lcd(address, columns, rows);
+
+atau mode auto-detect:
+
+LiquidCrystal_I2C lcd(columns, rows);
+
+### ✅ Kompatibel dengan:
+- print(), setCursor(), clear(), home()  
+- cursor(), noCursor()  
+- blink(), noBlink()  
+- scrollDisplayLeft(), scrollDisplayRight()  
+- autoscroll(), noAutoscroll()  
+- leftToRight(), rightToLeft()  
+- createChar() (custom character / CGRAM)
+
+⚠️ **Catatan:**  
+API lama tetap berfungsi tanpa perubahan kode.
+
+
+## 🏷 Versioning
+
+Library ini menggunakan **Semantic Versioning**:
+
+MAJOR.MINOR.PATCH
+
+### 📌 Versi Saat Ini
+- **v1.0.0**
+  - Initial stable release  
+  - Backward compatible API  
+  - Auto I2C address detection  
+  - Custom character support  
+  - Scroll, cursor, blink, progress bar examples
+
+Perubahan besar (breaking change) **tidak akan dilakukan** pada versi 1.x.
+
+
+## 📜 License
+
+This library is released under the **MIT License**.
+
+You are free to:  
+- use  
+- modify  
+- distribute  
+- include in commercial projects  
+
+As long as the original copyright notice is retained.

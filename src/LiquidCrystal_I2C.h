@@ -11,17 +11,6 @@
 #define LCD_ENABLE_SERIAL_DEBUG 0
 #endif
 
-/* =========================================================
-   LCD command definitions
-   ========================================================= */
-#define LCD_CLEARDISPLAY   0x01
-#define LCD_RETURNHOME    0x02
-#define LCD_ENTRYMODESET  0x04
-#define LCD_DISPLAYCONTROL 0x08
-#define LCD_CURSORSHIFT   0x10
-#define LCD_FUNCTIONSET   0x20
-#define LCD_SETDDRAMADDR  0x80
-
 #define LCD_ENTRYLEFT     0x02
 #define LCD_ENTRYSHIFTDECREMENT 0x00
 
@@ -46,14 +35,16 @@
 // =========================================================
 // HD44780 Commands
 // =========================================================
-#define LCD_CLEARDISPLAY      0x01
-#define LCD_RETURNHOME       0x02
-#define LCD_ENTRYMODESET     0x04
-#define LCD_DISPLAYCONTROL   0x08
-#define LCD_CURSORSHIFT      0x10
-#define LCD_FUNCTIONSET      0x20
+#define LCD_CLEARDISPLAY   0x01
+#define LCD_RETURNHOME    0x02
+#define LCD_ENTRYMODESET  0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT   0x10
+#define LCD_FUNCTIONSET   0x20
+#define LCD_SETDDRAMADDR  0x80
 #define LCD_SETCGRAMADDR     0x40
-#define LCD_SETDDRAMADDR     0x80
+
+
 
 // =========================================================
 // Entry Mode Flags

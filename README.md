@@ -96,37 +96,37 @@ void loop() {
 
 ## 🎬 Showcase Examples
 
-Library ini menyediakan example **dari basic hingga advanced**,  
-dirancang untuk menunjukkan **penggunaan LCD yang benar, efisien, dan non-blocking**.
+This library provides examples **from basic to advanced**,  
+designed to demonstrate **proper, efficient, and non-blocking usage of LCDs**.
 
 ### 📌 Basic
 - **Basic**  
-  Menampilkan teks sederhana di LCD dan memastikan wiring serta alamat I2C terdeteksi otomatis.
+  Displays simple text on the LCD and ensures wiring and I2C address detection.
 
 ### ⚙️ Intermediate
 - **Scroll_and_Autoscroll**  
-  Demonstrasi:
+  Demonstrates:
   - `scrollDisplayLeft()`  
   - `scrollDisplayRight()`  
   - `autoscroll()`  
   - `leftToRight()` / `rightToLeft()`
 
 - **Ticker_Text**  
-  Running text (ticker) halus berbasis `millis()`  
-  tanpa `delay()` dan tanpa `lcd.clear()`.
+  Smooth running text (ticker) using `millis()`  
+  without `delay()` and without `lcd.clear()`.
 
 ### 🚀 Advanced
 - **Advanced_CustomChar_ProgressBar**  
-  Penggunaan **custom character (CGRAM)** untuk membuat progress bar halus tanpa flicker.
+  Uses **custom characters (CGRAM)** to create a smooth progress bar without flickering.
 
 - **Scroll_with_ProgressBar**  
-  Showcase UI LCD yang menggabungkan:
+  Combines:
   - scrolling text  
   - progress bar  
-  - non-blocking update  
-  Cocok untuk dashboard IoT ESP32.
+  - non-blocking updates  
+  Ideal for ESP32 IoT dashboards.
 
-### 📂 Struktur Folder Example
+### 📂 Example Folder Structure
 examples/
 ├── Basic/
 ├── Scroll_and_Autoscroll/
@@ -137,15 +137,15 @@ examples/
 
 ## 🔁 API Compatibility
 
-Library ini dirancang **100% backward compatible** dengan API populer:
+This library is designed to be **100% backward compatible** with popular APIs:
 
 LiquidCrystal_I2C lcd(address, columns, rows);
 
-atau mode auto-detect:
+Or using auto-detect mode:
 
 LiquidCrystal_I2C lcd(columns, rows);
 
-### ✅ Kompatibel dengan:
+### ✅ Supported Methods:
 - print(), setCursor(), clear(), home()  
 - cursor(), noCursor()  
 - blink(), noBlink()  
@@ -154,17 +154,17 @@ LiquidCrystal_I2C lcd(columns, rows);
 - leftToRight(), rightToLeft()  
 - createChar() (custom character / CGRAM)
 
-⚠️ **Catatan:**  
-API lama tetap berfungsi tanpa perubahan kode.
+⚠️ **Note:**  
+Legacy API calls remain fully functional.
 
 
 ## 🏷 Versioning
 
-Library ini menggunakan **Semantic Versioning**:
+This library uses **Semantic Versioning**:
 
 MAJOR.MINOR.PATCH
 
-### 📌 Versi Saat Ini
+### 📌 Current Version
 - **v1.0.0**
   - Initial stable release  
   - Backward compatible API  
@@ -172,7 +172,7 @@ MAJOR.MINOR.PATCH
   - Custom character support  
   - Scroll, cursor, blink, progress bar examples
 
-Perubahan besar (breaking change) **tidak akan dilakukan** pada versi 1.x.
+Breaking changes will **not be introduced** in the 1.x series.
 
 
 ## 📜 License

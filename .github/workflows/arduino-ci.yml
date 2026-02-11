@@ -1,0 +1,39 @@
+name: Arduino CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        board:
+          - arduino:avr:uno
+          - esp32:esp32:esp32
+          - esp8266:esp8266:nodemcuv2
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+
+      - name: Update index
+        run: arduino-cli core update-index
+
+      - name: Install cores
+        run: |
+          arduino-cli core install arduino:avr
+          arduino-cli core install esp32:esp32
+          arduino-cli core install esp8266:esp8266
+
+      - name: Compile all examples
+        run: |
+          for example in $(find examples -name "*.ino"); do
+            echo "Compiling $example for ${{ matrix.board }}"
+            arduino-cli compile --fqbn ${{ matrix.board }} $example
+          done

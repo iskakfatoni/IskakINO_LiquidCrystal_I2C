@@ -124,6 +124,8 @@ private:
     uint8_t _rows;
     uint8_t _addr;
     bool    _backlight;
+    bool    _initialized;
+
 
     uint8_t _displayfunction;
     uint8_t _displaycontrol;

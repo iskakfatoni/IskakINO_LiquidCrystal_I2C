@@ -22,6 +22,12 @@ jobs:
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v1
 
+      - name: Configure Board URLs
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
       - name: Update index
         run: arduino-cli core update-index
 
@@ -35,5 +41,5 @@ jobs:
         run: |
           for example in $(find examples -name "*.ino"); do
             echo "Compiling $example for ${{ matrix.board }}"
-            arduino-cli compile --fqbn ${{ matrix.board }} $example
+            arduino-cli compile --fqbn ${{ matrix.board }} --library . $example
           done

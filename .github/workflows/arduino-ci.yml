@@ -5,8 +5,25 @@ on:
   pull_request:
 
 jobs:
-  build:
+
+  lint:
+    name: Arduino Lint
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Arduino Lint
+        uses: arduino/arduino-lint-action@v1
+        with:
+          library-manager: update
+          compliance: strict
+
+  build:
+    name: Compile Examples
+    runs-on: ubuntu-latest
+    needs: lint
 
     strategy:
       fail-fast: false
@@ -43,7 +60,7 @@ jobs:
           echo "Board: ${{ matrix.board }}"
           for example in $(find examples -name "*.ino"); do
 
-            # Skip ESP32 specific example for non-ESP32 boards
+            # Skip ESP32-specific example for non-ESP32 boards
             if [[ "$example" == *ESP32_Custom_I2C_Pins* ]] && [[ "${{ matrix.board }}" != "esp32:esp32:esp32" ]]; then
               echo "Skipping $example (ESP32 only)"
               continue

@@ -19,12 +19,17 @@ LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t cols, uint8_t rows)
 /* =========================================================
    Public API
    ========================================================= */
+
 void LiquidCrystal_I2C::setAddress(uint8_t addr) {
     _addr = addr;
 #if LCD_ENABLE_SERIAL_DEBUG
     Serial.print(F("[LCD] Manual I2C address set: 0x"));
     Serial.println(_addr, HEX);
 #endif
+}
+
+uint8_t LiquidCrystal_I2C::getAddress() const {
+    return _addr;
 }
 
 void LiquidCrystal_I2C::createChar(uint8_t location, const uint8_t charmap[]) {
@@ -35,14 +40,14 @@ void LiquidCrystal_I2C::createChar(uint8_t location, const uint8_t charmap[]) {
     }
 }
 
-uint8_t LiquidCrystal_I2C::getAddress() const {
-    return _addr;
-}
-
 void LiquidCrystal_I2C::begin() {
+
     Wire.begin();
+    Wire.setClock(100000);   // Stabil untuk LCD I2C
 
     _scanAddress();
+
+    if (_addr == 0x00) return;   // Tidak ditemukan
 
     if (_rows > 1) {
         _displayfunction |= LCD_2LINE;
@@ -87,29 +92,14 @@ void LiquidCrystal_I2C::setCursor(uint8_t col, uint8_t row) {
     _command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
 
-void LiquidCrystal_I2C::noDisplay() {
-    _displaycontrol &= ~LCD_DISPLAYON;
-    _command(LCD_DISPLAYCONTROL | _displaycontrol);
-}
-
 void LiquidCrystal_I2C::display() {
     _displaycontrol |= LCD_DISPLAYON;
     _command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
-void LiquidCrystal_I2C::noBacklight() {
-    _backlight = false;
-    _expanderWrite(0);
-}
-
-void LiquidCrystal_I2C::backlight() {
-    _backlight = true;
-    _expanderWrite(0);
-}
-
-size_t LiquidCrystal_I2C::write(uint8_t value) {
-    _send(value, Rs);
-    return 1;
+void LiquidCrystal_I2C::noDisplay() {
+    _displaycontrol &= ~LCD_DISPLAYON;
+    _command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
 void LiquidCrystal_I2C::cursor() {
@@ -132,46 +122,22 @@ void LiquidCrystal_I2C::noBlink() {
     _command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
+void LiquidCrystal_I2C::backlight() {
+    _backlight = true;
+    _expanderWrite(0);
+}
+
+void LiquidCrystal_I2C::noBacklight() {
+    _backlight = false;
+    _expanderWrite(0);
+}
+
 void LiquidCrystal_I2C::scrollDisplayLeft() {
     _command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
 }
 
 void LiquidCrystal_I2C::scrollDisplayRight() {
     _command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
-}
-
-/* =========================================================
-   Low-level command handling
-   ========================================================= */
-void LiquidCrystal_I2C::_command(uint8_t value) {
-    _send(value, 0);
-}
-
-void LiquidCrystal_I2C::_send(uint8_t value, uint8_t mode) {
-    uint8_t highnib = value & 0xF0;
-    uint8_t lownib  = (value << 4) & 0xF0;
-
-    _write4bits(highnib | mode);
-    _write4bits(lownib | mode);
-}
-
-void LiquidCrystal_I2C::_write4bits(uint8_t value) {
-    _expanderWrite(value);
-    _pulseEnable(value);
-}
-
-void LiquidCrystal_I2C::_pulseEnable(uint8_t data) {
-    _expanderWrite(data | En);
-    delayMicroseconds(1);
-
-    _expanderWrite(data & ~En);
-    delayMicroseconds(50);
-}
-
-void LiquidCrystal_I2C::_expanderWrite(uint8_t data) {
-    Wire.beginTransmission(_addr);
-    Wire.write(data | (_backlight ? LCD_BACKLIGHT : LCD_NOBACKLIGHT));
-    Wire.endTransmission();
 }
 
 void LiquidCrystal_I2C::leftToRight() {
@@ -194,18 +160,78 @@ void LiquidCrystal_I2C::noAutoscroll() {
     _command(LCD_ENTRYMODESET | _displaymode);
 }
 
+size_t LiquidCrystal_I2C::write(uint8_t value) {
+    _send(value, Rs);
+    return 1;
+}
+
+/* =========================================================
+   Low-level command handling
+   ========================================================= */
+
+void LiquidCrystal_I2C::_command(uint8_t value) {
+    _send(value, 0);
+}
+
+void LiquidCrystal_I2C::_send(uint8_t value, uint8_t mode) {
+    if (_addr == 0x00) return;
+
+    uint8_t highnib = value & 0xF0;
+    uint8_t lownib  = (value << 4) & 0xF0;
+
+    _write4bits(highnib | mode);
+    _write4bits(lownib  | mode);
+}
+
+void LiquidCrystal_I2C::_write4bits(uint8_t value) {
+    _expanderWrite(value);
+    _pulseEnable(value);
+}
+
+void LiquidCrystal_I2C::_pulseEnable(uint8_t data) {
+    _expanderWrite(data | En);
+    delayMicroseconds(1);
+
+    _expanderWrite(data & ~En);
+    delayMicroseconds(50);
+}
+
+void LiquidCrystal_I2C::_expanderWrite(uint8_t data) {
+    if (_addr == 0x00) return;
+
+    Wire.beginTransmission(_addr);
+    Wire.write(data | (_backlight ? LCD_BACKLIGHT : LCD_NOBACKLIGHT));
+    Wire.endTransmission();
+}
+
 /* =========================================================
    I2C Address Auto Scan
    ========================================================= */
+
 void LiquidCrystal_I2C::_scanAddress() {
+
     if (_addr != 0x00) return; // manual override
 
+    // PCF8574
     for (uint8_t addr = 0x20; addr <= 0x27; addr++) {
         Wire.beginTransmission(addr);
         if (Wire.endTransmission() == 0) {
             _addr = addr;
 #if LCD_ENABLE_SERIAL_DEBUG
-            Serial.print(F("[LCD] I2C found at 0x"));
+            Serial.print(F("[LCD] Found at 0x"));
+            Serial.println(_addr, HEX);
+#endif
+            return;
+        }
+    }
+
+    // PCF8574A
+    for (uint8_t addr = 0x38; addr <= 0x3F; addr++) {
+        Wire.beginTransmission(addr);
+        if (Wire.endTransmission() == 0) {
+            _addr = addr;
+#if LCD_ENABLE_SERIAL_DEBUG
+            Serial.print(F("[LCD] Found at 0x"));
             Serial.println(_addr, HEX);
 #endif
             return;

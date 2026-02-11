@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         board:
           - arduino:avr:uno
@@ -37,9 +38,17 @@ jobs:
           arduino-cli core install esp32:esp32
           arduino-cli core install esp8266:esp8266
 
-      - name: Compile all examples
+      - name: Compile examples
         run: |
+          echo "Board: ${{ matrix.board }}"
           for example in $(find examples -name "*.ino"); do
-            echo "Compiling $example for ${{ matrix.board }}"
+
+            # Skip ESP32 specific example for non-ESP32 boards
+            if [[ "$example" == *ESP32_Custom_I2C_Pins* ]] && [[ "${{ matrix.board }}" != "esp32:esp32:esp32" ]]; then
+              echo "Skipping $example (ESP32 only)"
+              continue
+            fi
+
+            echo "Compiling $example"
             arduino-cli compile --fqbn ${{ matrix.board }} --library . $example
           done

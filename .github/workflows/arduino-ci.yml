@@ -64,8 +64,12 @@ jobs:
 
       - name: Compile examples
         run: |
-          echo "Board: ${{ matrix.board }}"
-          # Cari semua file .ino di folder examples
+          # Dapatkan path absolut dari root library untuk memastikan compiler menemukan folder src
+          LIB_PATH=$(pwd)
+          echo "Library Path: $LIB_PATH"
+          echo "Board Target: ${{ matrix.board }}"
+          
+          # Cari semua file .ino di folder examples secara rekursif
           for example in $(find examples -name "*.ino"); do
             
             # Skip contoh spesifik ESP32 jika board bukan ESP32
@@ -74,6 +78,8 @@ jobs:
               continue
             fi
 
-            echo "Compiling $example..."
-            arduino-cli compile --fqbn ${{ matrix.board }} --library . "$example"
+            echo "-------------------------------------------------------"
+            echo "Compiling: $example"
+            # Flag --library "$LIB_PATH" memaksa compiler mencari header di root/src
+            arduino-cli compile --fqbn ${{ matrix.board }} --library "$LIB_PATH" "$example"
           done

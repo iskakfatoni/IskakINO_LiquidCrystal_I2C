@@ -132,10 +132,47 @@ Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. A
 > - Pastikan Jumper I2C pada modul belakang LCD terpasang agar lampu latar (backlight) menyala.
 
 ---
+
+## 📖 Dokumentasi API (API Reference)
+
+Berikut adalah daftar fungsi utama yang tersedia di **IskakINO_LiquidCrystal_I2C v1.0.1**.
+### 1. Inisialisasi & Kontrol Dasar
+* **`begin()`**
+    Inisialisasi LCD dan otomatis mencari alamat I2C (Auto-Scan). Tidak perlu memasukkan alamat secara manual.
+* **`backlight()` / `noBacklight()`**
+    Menyalakan atau mematikan lampu latar (backlight) LCD.
+* **`clear()`**
+    Menghapus seluruh tampilan layar dan mereset posisi kursor ke pojok kiri atas (0,0).
+* **`setCursor(col, row)`**
+    Menentukan posisi kursor sebelum mencetak teks.
+### 2. Fitur Cerdas (Smart UX - v1.0.1) ✨
+Fungsi-fungsi ini dirancang untuk mempermudah pembuatan antarmuka pengguna tanpa logika matematika yang rumit.
+| Fungsi | Parameter | Deskripsi |
+|:---|:---|:---|
+| **`printCenter`** | `(String text, int row)` | Menampilkan teks otomatis di tengah baris yang ditentukan. |
+| **`typewriter`** | `(String text, int row, int delayTime)` | Efek animasi mengetik. `delayTime` menentukan kecepatan (ms). |
+| **`isConnected`** | `None` | Mengembalikan `true` jika hardware LCD terdeteksi di jalur I2C. |
+### 3. Custom Characters & Grafik
+Anda dapat membuat hingga 8 karakter buatan sendiri (ikon, logo, dll).
+* **`createChar(uint8_t location, uint8_t charmap[])`**: Menyimpan karakter ke memori LCD (index 0-7).
+* **`write(uint8_t location)`**: Menampilkan karakter kustom yang telah disimpan.
+
+
+---
+## 🔌 Referensi Koneksi (Pinout)
+Untuk memastikan library berjalan lancar, pastikan koneksi pin I2C sesuai dengan board yang Anda gunakan:
+| Platform | SDA Pin | SCL Pin | Tegangan (VCC) |
+|:---|:---:|:---:|:---|
+| **Arduino Uno / Nano** | A4 | A5 | 5V |
+| **ESP8266 (NodeMCU)** | D2 (GPIO4) | D1 (GPIO5) | 3.3V / 5V |
+| **ESP32 (Wroom)** | GPIO21 | GPIO22 | 3.3V / 5V |
+
+> [!TIP]
+> **Khusus ESP32:** Jika Anda menggunakan pin I2C selain default, panggil `Wire.begin(SDA_PIN, SCL_PIN);` di dalam `setup()` sebelum memanggil `lcd.begin();`.
+
+---
 ## 🔁 API Compatibility
-
 Library ini dirancang agar **100% kompatibel** dengan pola penggunaan `LiquidCrystal_I2C` yang umum digunakan di komunitas Arduino. Anda tidak perlu mengubah logika kode lama Anda.
-
 ### 1. Auto-Detect Mode (Rekomendasi)
 Cukup masukkan ukuran layar. Library akan melakukan scanning otomatis pada jalur I2C untuk menemukan alamat LCD Anda.
 ```cpp

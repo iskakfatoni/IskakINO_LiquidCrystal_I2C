@@ -3,9 +3,9 @@
 [![Arduino Library](https://img.shields.io/badge/Arduino-Library-blue.svg)](https://www.arduino.cc/reference/en/libraries/)
 [![Platform](https://img.shields.io/badge/platform-Arduino%20%7C%20ESP32-green)](#)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-orange)](#)
-[![CI](https://github.com/iskakfatoni/IskakINO_LiquidCrystal_I2C/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/iskakfatoni/IskakINO_LiquidCrystal_I2C/actions)
 ![Version](https://img.shields.io/github/v/release/iskakfatoni/IskakINO_LiquidCrystal_I2C?color=blue)
+[![CI](https://github.com/iskakfatoni/IskakINO_LiquidCrystal_I2C/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/iskakfatoni/IskakINO_LiquidCrystal_I2C/actions)
+
 
 LiquidCrystal I2C library for **HD44780 LCD** using **PCF8574 I2C expander**  
 with **automatic I2C address detection**.

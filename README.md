@@ -101,23 +101,24 @@ void loop() {
 }
 ```
 
----
+----
 ## 📂 Showcase Examples
 Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. Anda dapat menemukan file-file ini di folder `examples/`.
 ### Daftar Contoh Berdasarkan Level
-
 | No | Folder Contoh | Deskripsi | Level |
 |:---:|:---|:---|:---:|
 | 01 | **[01_HelloWorld](./examples/01_HelloWorld)** | Inisialisasi LCD dan fitur Auto-Scan alamat I2C secara otomatis. | ⭐ Basic |
 | 02 | **[02_BlinkAndCursor](./examples/02_BlinkAndCursor)** | Mengontrol visual kursor (garis bawah) dan efek kedipan (blink). | ⭐ Basic |
 | 03 | **[03_ScrollAndBacklight](./examples/03_ScrollAndBacklight)** | Animasi teks berjalan ke samping dan kontrol daya lampu latar. | ⭐ Basic |
-| 04 | **[04_CustomCharacter](./examples/04_CustomCharacter)** | Cara menggambar simbol buatan sendiri (ikon hati, bel, dll) di memori LCD. | ⭐⭐ Interm. |
-| 05 | **[05_ProgressBar](./examples/05_ProgressBar)** | Membuat animasi loading bar yang dinamis dan perhitungan persentase. | ⭐⭐ Interm. |
+| 04 | **[04_CustomCharacter](./examples/04_CustomCharacter)** | Cara menggambar simbol buatan sendiri (ikon hati, bel, dll). | ⭐⭐ Interm. |
+| 05 | **[05_ProgressBar](./examples/05_ProgressBar)** | Membuat animasi loading bar yang dinamis dan persentase. | ⭐⭐ Interm. |
 | 06 | **[06_I2CScannerMode](./examples/06_I2CScannerMode)** | Menggunakan fungsi internal library untuk mendeteksi perangkat I2C lain. | ⭐⭐ Interm. |
-| 07 | **[07_DigitalClock](./examples/07_DigitalClock)** | Membuat jam digital akurat tanpa `delay()` menggunakan logika `millis()`. | ⭐⭐⭐ Advance |
+| 07 | **[07_DigitalClock](./examples/07_DigitalClock)** | Membuat jam digital akurat tanpa `delay()` menggunakan `millis()`. | ⭐⭐⭐ Advance |
 | 08 | **[08_MenuNavigation](./examples/08_MenuNavigation)** | Struktur menu multi-halaman untuk navigasi antarmuka pengguna (UI). | ⭐⭐⭐ Advance |
-| 09 | **[09_CustomI2CPins_ESP32](./examples/09_CustomI2CPins_ESP32)** | Konfigurasi pin SDA & SCL kustom untuk fleksibilitas pada ESP32/ESP8266. | ⭐⭐⭐ Advance |
-| 10 | **[10_LogoAnimation](./examples/10_LogoAnimation)** | Membuat animasi Splash Screen (Booting) menggunakan gabungan teknik kustom. | ⭐⭐⭐ Advance |
+| 09 | **[09_CustomI2CPins_ESP32](./examples/09_CustomI2CPins_ESP32)** | Konfigurasi pin SDA & SCL kustom untuk ESP32/ESP8266. | ⭐⭐⭐ Advance |
+| 10 | **[10_LogoAnimation](./examples/10_LogoAnimation)** | Membuat animasi Splash Screen menggunakan gabungan teknik kustom. | ⭐⭐⭐ Advance |
+| **---** | **--- NEW IN v1.0.1 ---** | **-------------------------------------------------------** | **---** |
+| 11 | **[11_NewFeatures_v101](./examples/11_NewFeatures_v101)** | Demo fitur `printCenter`, `typewriter`, dan `isConnected`. | ⭐⭐ Interm. |
 
 ---
 ### 🚀 Cara Menjalankan Contoh

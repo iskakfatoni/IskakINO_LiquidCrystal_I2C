@@ -113,6 +113,12 @@ public:
     /* Print override */
     virtual size_t write(uint8_t);
 
+   // --- Tambahkan di bawah fungsi print standar ---
+   void printCenter(String text, int row);
+   void typewriter(String text, int row, int delayTime = 100);
+   bool isConnected(); // Fitur cek koneksi hardware
+
+
 private:
     void _command(uint8_t value);
     void _send(uint8_t value, uint8_t mode);

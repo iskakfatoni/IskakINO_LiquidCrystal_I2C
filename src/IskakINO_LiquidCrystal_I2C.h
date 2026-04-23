@@ -126,7 +126,9 @@ private:
     void _pulseEnable(uint8_t data);
     void _expanderWrite(uint8_t data);
     void _scanAddress();
-
+    #ifndef ISKAKINO_NO_SPLASH
+       void _showSplashScreen(); 
+    #endif
     uint8_t _cols;
     uint8_t _rows;
     uint8_t _addr;

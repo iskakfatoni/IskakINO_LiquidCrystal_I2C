@@ -78,7 +78,7 @@ Cukup gunakan kode sederhana ini untuk memulai. Library akan secara otomatis men
 
 // Inisialisasi: (Jumlah Kolom, Jumlah Baris)
 // Alamat I2C akan dideteksi secara otomatis!
-IskakINO_LiquidCrystal_I2C lcd(16, 2);
+LiquidCrystal_I2C lcd(16, 2);
 
 void setup() {
   // Memulai komunikasi I2C dan LCD

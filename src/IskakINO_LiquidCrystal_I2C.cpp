@@ -76,6 +76,10 @@ void LiquidCrystal_I2C::begin() {
 
     home();
     _initialized = true;
+    // --- FITUR BARU v1.0.2 ---
+    #ifndef ISKAKINO_NO_SPLASH
+    _showSplashScreen();
+    #endif
 }
 
 void LiquidCrystal_I2C::clear() {
@@ -276,3 +280,28 @@ bool LiquidCrystal_I2C::isConnected() {
   Wire.beginTransmission(_addr); // Benar (a kecil)
   return (Wire.endTransmission() == 0);
 }
+
+#ifndef ISKAKINO_NO_SPLASH
+/**
+ * @brief Menampilkan Splash Screen Branding IskakINO
+ * Muncul secara default kecuali didefinisikan ISKAKINO_NO_SPLASH
+ */
+void LiquidCrystal_I2C::_showSplashScreen() {
+    backlight();
+    clear();
+    
+    // Baris 1: Branding Author
+    setCursor(0, 0);
+    print("@iskakfatoni");
+    
+    // Baris 2: Informasi Alamat I2C hasil scan
+    setCursor(0, 1);
+    print("I2C Addr: 0x");
+    if (_addr < 0x10) print("0"); // Padding nol jika alamat < 0x10
+    print(_addr, HEX);
+    
+    delay(2000); // Tahan tampilan selama 2 detik
+    clear();     // Bersihkan layar agar user bisa langsung menggunakan LCD
+    home();      // Kembalikan kursor ke posisi awal
+}
+#endif

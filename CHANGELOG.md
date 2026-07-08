@@ -6,7 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
+## [1.0.3] - 2026-07-08
 
+### Fixed
+- `setAddress()` sekarang bisa dipanggil kapan saja, termasuk **setelah** `begin()`
+  dijalankan. Sebelumnya, memanggil `setAddress()` setelah `begin()` tidak berefek
+  karena guard `if (_initialized) return;` di dalam `begin()` mencegah re-inisialisasi.
+  Sekarang, `setAddress()` otomatis mereset status internal dan memanggil ulang
+  `begin()` dengan alamat I2C yang baru.
+
+### Changed
+- Menambahkan komentar penjelas pada `backlight()` / `noBacklight()` agar lebih
+  eksplisit menjelaskan bagaimana bit backlight ditambahkan otomatis oleh
+  `_expanderWrite()`. Tidak ada perubahan perilaku fungsional.
+---
+  
 ## [1.0.0] - 2026-02-10
 
 ### Added

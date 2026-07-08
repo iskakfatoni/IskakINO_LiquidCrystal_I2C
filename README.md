@@ -100,16 +100,14 @@ void loop() {
   // Kode utama Anda di sini
 }
 ```
-### Mengganti Alamat I2C Saat Runtime
-
+## Mengganti Alamat I2C Saat Runtime
 Jika Anda punya beberapa LCD atau ingin mengganti alamat secara dinamis,
 cukup panggil `setAddress()` kapan saja — bahkan setelah `begin()`:
 
-\`\`\`cpp
+```cpp
 lcd.begin();          // LCD pertama, alamat dideteksi otomatis (auto-scan)
 lcd.setAddress(0x3F); // Ganti ke alamat lain, LCD otomatis di-reinit
-\`\`\`
-
+```
 ----
 ## 📂 Showcase Examples
 Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. Anda dapat menemukan file-file ini di folder `examples/`.

@@ -4,13 +4,13 @@
 
 /* =========================================================
    Constructor
-   ========================================================= */
+========================================================= */
 LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t cols, uint8_t rows)
     : _cols(cols),
       _rows(rows),
       _addr(0x00),
       _backlight(true),
-      _initialized(false), 
+      _initialized(false),
       _displayfunction(LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS),
       _displaycontrol(0),
       _displaymode(0)
@@ -19,14 +19,24 @@ LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t cols, uint8_t rows)
 
 /* =========================================================
    Public API
-   ========================================================= */
+========================================================= */
 
+// FIX #2: setAddress() sekarang aman dipanggil kapan saja.
+// - Sebelum begin(): alamat baru dipakai saat begin() jalan (perilaku lama, tetap sama).
+// - Setelah begin(): LCD otomatis di-reinit dengan alamat baru,
+//   jadi tidak lagi "terkunci" oleh guard if (_initialized) return; di begin().
 void LiquidCrystal_I2C::setAddress(uint8_t addr) {
     _addr = addr;
+
 #if LCD_ENABLE_SERIAL_DEBUG
     Serial.print(F("[LCD] Manual I2C address set: 0x"));
     Serial.println(_addr, HEX);
 #endif
+
+    if (_initialized) {
+        _initialized = false; // buka kunci supaya begin() mau jalan ulang
+        begin();               // re-init otomatis pakai alamat baru
+    }
 }
 
 uint8_t LiquidCrystal_I2C::getAddress() const {
@@ -43,19 +53,18 @@ void LiquidCrystal_I2C::createChar(uint8_t location, const uint8_t charmap[]) {
 
 void LiquidCrystal_I2C::begin() {
     if (_initialized) return;
+
     Wire.begin();
-    Wire.setClock(100000);   // Stabil untuk LCD I2C
+    Wire.setClock(100000); // Stabil untuk LCD I2C
 
     _scanAddress();
-
-    if (_addr == 0x00) return;   // Tidak ditemukan
+    if (_addr == 0x00) return; // Tidak ditemukan
 
     if (_rows > 1) {
         _displayfunction |= LCD_2LINE;
     }
 
     delay(50);
-
     _write4bits(0x03 << 4);
     delayMicroseconds(4500);
     _write4bits(0x03 << 4);
@@ -68,18 +77,18 @@ void LiquidCrystal_I2C::begin() {
 
     _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
     display();
-
     clear();
 
     _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
     _command(LCD_ENTRYMODESET | _displaymode);
-
     home();
+
     _initialized = true;
-    // --- FITUR BARU v1.0.2 ---
-    #ifndef ISKAKINO_NO_SPLASH
+
+    // --- FITUR v1.0.2 (dipertahankan sesuai permintaan) ---
+#ifndef ISKAKINO_NO_SPLASH
     _showSplashScreen();
-    #endif
+#endif
 }
 
 void LiquidCrystal_I2C::clear() {
@@ -128,14 +137,17 @@ void LiquidCrystal_I2C::noBlink() {
     _command(LCD_DISPLAYCONTROL | _displaycontrol);
 }
 
+// FIX #1: dibuat eksplisit. _expanderWrite() menambahkan bit backlight
+// otomatis berdasarkan nilai _backlight, jadi cukup panggil _expanderWrite(0),
+// tapi sekarang niatnya lebih jelas dibaca lewat komentar berikut.
 void LiquidCrystal_I2C::backlight() {
     _backlight = true;
-    _expanderWrite(0);
+    _expanderWrite(0); // _expanderWrite akan OR-kan LCD_BACKLIGHT karena _backlight == true
 }
 
 void LiquidCrystal_I2C::noBacklight() {
     _backlight = false;
-    _expanderWrite(0);
+    _expanderWrite(0); // _expanderWrite akan OR-kan LCD_NOBACKLIGHT karena _backlight == false
 }
 
 void LiquidCrystal_I2C::scrollDisplayLeft() {
@@ -173,8 +185,7 @@ size_t LiquidCrystal_I2C::write(uint8_t value) {
 
 /* =========================================================
    Low-level command handling
-   ========================================================= */
-
+========================================================= */
 void LiquidCrystal_I2C::_command(uint8_t value) {
     _send(value, 0);
 }
@@ -183,10 +194,9 @@ void LiquidCrystal_I2C::_send(uint8_t value, uint8_t mode) {
     if (_addr == 0x00) return;
 
     uint8_t highnib = value & 0xF0;
-    uint8_t lownib  = (value << 4) & 0xF0;
-
+    uint8_t lownib = (value << 4) & 0xF0;
     _write4bits(highnib | mode);
-    _write4bits(lownib  | mode);
+    _write4bits(lownib | mode);
 }
 
 void LiquidCrystal_I2C::_write4bits(uint8_t value) {
@@ -197,7 +207,6 @@ void LiquidCrystal_I2C::_write4bits(uint8_t value) {
 void LiquidCrystal_I2C::_pulseEnable(uint8_t data) {
     _expanderWrite(data | En);
     delayMicroseconds(1);
-
     _expanderWrite(data & ~En);
     delayMicroseconds(50);
 }
@@ -212,10 +221,8 @@ void LiquidCrystal_I2C::_expanderWrite(uint8_t data) {
 
 /* =========================================================
    I2C Address Auto Scan
-   ========================================================= */
-
+========================================================= */
 void LiquidCrystal_I2C::_scanAddress() {
-
     if (_addr != 0x00) return; // manual override
 
     // PCF8574
@@ -253,53 +260,55 @@ void LiquidCrystal_I2C::_scanAddress() {
  * Menampilkan teks tepat di tengah layar secara otomatis
  */
 void LiquidCrystal_I2C::printCenter(String text, int row) {
-  int len = text.length();
-  int pos = (_cols - len) / 2;
-  if (pos < 0) pos = 0; // Jaga-jaga jika teks lebih panjang dari kolom
-  setCursor(pos, row);
-  print(text);
+    int len = text.length();
+    int pos = (_cols - len) / 2;
+    if (pos < 0) pos = 0; // Jaga-jaga jika teks lebih panjang dari kolom
+
+    setCursor(pos, row);
+    print(text);
 }
 
 /**
  * Menampilkan teks dengan efek mengetik (per karakter)
  */
 void LiquidCrystal_I2C::typewriter(String text, int row, int delayTime) {
-  setCursor(0, row);
-  for (int i = 0; i < text.length(); i++) {
-    if (i < _cols) { // Batasi agar tidak meluap dari jumlah kolom
-      print(text[i]);
-      delay(delayTime);
+    setCursor(0, row);
+    for (int i = 0; i < text.length(); i++) {
+        if (i < _cols) { // Batasi agar tidak meluap dari jumlah kolom
+            print(text[i]);
+            delay(delayTime);
+        }
     }
-  }
 }
 
 /**
  * Mengecek apakah LCD masih terhubung di jalur I2C
  */
 bool LiquidCrystal_I2C::isConnected() {
-  Wire.beginTransmission(_addr); // Benar (a kecil)
-  return (Wire.endTransmission() == 0);
+    Wire.beginTransmission(_addr);
+    return (Wire.endTransmission() == 0);
 }
 
 #ifndef ISKAKINO_NO_SPLASH
 /**
  * @brief Menampilkan Splash Screen Branding IskakINO
  * Muncul secara default kecuali didefinisikan ISKAKINO_NO_SPLASH
+ * (dipertahankan sesuai permintaan — tidak diubah)
  */
 void LiquidCrystal_I2C::_showSplashScreen() {
     backlight();
     clear();
-    
+
     // Baris 1: Branding Author
     setCursor(0, 0);
     print("@iskakfatoni");
-    
+
     // Baris 2: Informasi Alamat I2C hasil scan
     setCursor(0, 1);
     print("I2C Addr: 0x");
     if (_addr < 0x10) print("0"); // Padding nol jika alamat < 0x10
     print(_addr, HEX);
-    
+
     delay(2000); // Tahan tampilan selama 2 detik
     clear();     // Bersihkan layar agar user bisa langsung menggunakan LCD
     home();      // Kembalikan kursor ke posisi awal

@@ -100,6 +100,15 @@ void loop() {
   // Kode utama Anda di sini
 }
 ```
+### Mengganti Alamat I2C Saat Runtime
+
+Jika Anda punya beberapa LCD atau ingin mengganti alamat secara dinamis,
+cukup panggil `setAddress()` kapan saja — bahkan setelah `begin()`:
+
+\`\`\`cpp
+lcd.begin();          // LCD pertama, alamat dideteksi otomatis (auto-scan)
+lcd.setAddress(0x3F); // Ganti ke alamat lain, LCD otomatis di-reinit
+\`\`\`
 
 ----
 ## 📂 Showcase Examples
@@ -145,6 +154,10 @@ Berikut adalah daftar fungsi utama yang tersedia di **IskakINO_LiquidCrystal_I2C
     Menghapus seluruh tampilan layar dan mereset posisi kursor ke pojok kiri atas (0,0).
 * **`setCursor(col, row)`**
     Menentukan posisi kursor sebelum mencetak teks.
+* **`setAddress(uint8_t addr)` / `getAddress()`**
+  Mengatur atau membaca alamat I2C LCD secara manual. Bisa dipanggil kapan saja —
+  jika dipanggil **setelah** `begin()`, LCD akan otomatis di-reinit dengan alamat
+  baru tanpa perlu memanggil `begin()` ulang secara manual.
 ### 2. Fitur Cerdas (Smart UX - v1.0.1) ✨
 Fungsi-fungsi ini dirancang untuk mempermudah pembuatan antarmuka pengguna tanpa logika matematika yang rumit.
 | Fungsi | Parameter | Deskripsi |
@@ -200,12 +213,16 @@ Catatan: Panggilan API lama (Legacy) tetap berfungsi penuh tanpa memerlukan modi
 Library ini mengikuti standar **[Semantic Versioning](https://semver.org/)** (`MAJOR.MINOR.PATCH`).
 | Versi | Status | Deskripsi Perubahan |
 |:---:|:---:|:---|
-| **v1.0.1** | **Latest** | **Smart UX Update**: Penambahan fungsi `printCenter()`, `typewriter()`, `isConnected()`, dan perbaikan stabilitas compile pada ESP8266. |
+| **v1.0.3** | **Latest** | **Stability Fix**: `setAddress()` kini bisa dipanggil kapan saja (sebelum atau sesudah `begin()`) dan otomatis re-init LCD dengan alamat baru. Sebelumnya alamat baru diabaikan jika dipanggil setelah `begin()`. |
+| **v1.0.1** | Stable | **Smart UX Update**: Penambahan fungsi `printCenter()`, `typewriter()`, `isConnected()`, dan perbaikan stabilitas compile pada ESP8266. |
 | **v1.0.0** | Stable | **Initial Release**: Fitur Auto-Address, dukungan karakter kustom, dan kompatibilitas penuh dengan API LiquidCrystal_I2C standar. |
 ### ✅ Komitmen Stabilitas
 * **Backward Compatibility**: API standar akan selalu didukung untuk memastikan proyek lama Anda tetap berjalan.
 * **No Breaking Changes**: Tidak akan ada perubahan drastis pada fungsi inti dalam seri versi `1.x.x`.
 * **Cross-Platform**: Setiap rilis divalidasi via GitHub Actions untuk Arduino Uno, ESP32, dan ESP8266.
+
+
+
 
 ---
 ## 🤝 Kontribusi (Contributing)

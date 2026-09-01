@@ -4,6 +4,13 @@
  * File: 09_CustomI2CPins_ESP32.ino
  * Deskripsi: Cara mengubah pin SDA & SCL secara manual pada ESP32/ESP8266.
  * Author: Iskak Fatoni
+ *
+ * [UPDATED v1.1.0 - PENTING]
+ * Sejak v1.1.0, begin() secara default memanggil Wire.begin() versi standar
+ * SEKALI untuk semua instance LCD (fitur multi-LCD safety). Kalau kamu sudah
+ * memanggil Wire.begin(SDA, SCL) SENDIRI dengan pin custom seperti di contoh
+ * ini, WAJIB panggil LiquidCrystal_I2C::useExternalWireBegin() setelahnya,
+ * supaya library tidak menimpa pin custom-mu dengan Wire.begin() default.
  * =========================================================
  */
 
@@ -19,7 +26,7 @@ LiquidCrystal_I2C lcd(16, 2);
   const int PIN_SDA = 18; // Contoh: memindahkan SDA ke GPIO 18
   const int PIN_SCL = 19; // Contoh: memindahkan SCL ke GPIO 19
 #elif defined(ESP8266)
-  const int PIN_SDA = D1; 
+  const int PIN_SDA = D1;
   const int PIN_SCL = D2;
 #endif
 
@@ -28,14 +35,19 @@ void setup() {
   // Kita harus memanggil Wire.begin(SDA, SCL) SEBELUM lcd.begin()
   #if defined(ESP32) || defined(ESP8266)
     Wire.begin(PIN_SDA, PIN_SCL);
+
+    // 2. WAJIB (v1.1.0+): beri tahu library agar TIDAK memanggil
+    // Wire.begin() default lagi di dalam lcd.begin() nanti.
+    LiquidCrystal_I2C::useExternalWireBegin();
   #endif
 
-  // 2. MEMULAI LCD
-  // Karena Wire sudah dimulai dengan pin custom, library IskakINO 
-  // akan otomatis mengikuti jalur tersebut.
+  // 3. MEMULAI LCD
+  // Karena Wire sudah dimulai dengan pin custom dan library sudah diberi
+  // tahu lewat useExternalWireBegin(), lcd.begin() TIDAK akan menimpa
+  // konfigurasi pin di atas.
   lcd.begin();
   lcd.backlight();
-  
+
   lcd.setCursor(0, 0);
   lcd.print("ESP32 Custom Pin");
   lcd.setCursor(0, 1);

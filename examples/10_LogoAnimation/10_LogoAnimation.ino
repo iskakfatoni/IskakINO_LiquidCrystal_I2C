@@ -5,7 +5,16 @@
  * Deskripsi: Membuat animasi Splash Screen (Logo) saat awal dinyalakan.
  * Author: Iskak Fatoni
  * =========================================================
+ *
+ * [UPDATED v1.1.0 - PENTING]
+ * Contoh ini bikin animasi splash screen SENDIRI secara manual. Karena
+ * library juga otomatis menampilkan splash screen bawaannya sendiri di
+ * dalam begin() (kecuali di-disable), tanpa define di bawah ini kamu akan
+ * melihat DUA animasi splash berturut-turut (punya library, lalu punya
+ * contoh ini). Definisikan ISKAKINO_NO_SPLASH SEBELUM #include supaya
+ * cuma animasi custom di contoh ini yang tampil.
  */
+#define ISKAKINO_NO_SPLASH
 
 #include <IskakINO_LiquidCrystal_I2C.h>
 

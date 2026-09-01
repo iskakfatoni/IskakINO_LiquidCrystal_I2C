@@ -14,6 +14,7 @@ Designed to be:
 - ⚡ Lightweight & optimized for flash/RAM
 - 🔌 Arduino & ESP32 friendly
 - 🧼 Clean API & maintainer-grade structure
+- 🧵 Non-blocking friendly untuk efek teks & animasi (v1.1.0+)
 ---
 ## 📑 Table of Contents
 - [Features](#-features)
@@ -34,6 +35,12 @@ Designed to be:
 - Custom character (CGRAM) support
 - Scroll, autoscroll, cursor & blink control
 - Non-blocking friendly (millis-based design)
+- Non-blocking typewriter & auto horizontal scroll text effect (v1.1.0)
+- Backlight auto-timeout (v1.1.0)
+- Built-in progress bar (v1.1.0)
+- printf-style formatted print (v1.1.0)
+- Preset icon set (wifi, battery, arrow, bell, heart, dll) via `IskakINO_LCD_Icons.h` (v1.1.0)
+- Safe multi-LCD initialization on a shared I2C bus (v1.1.0)
 - Optimized for ESP32 & Arduino boards
 
 ---
@@ -108,6 +115,39 @@ cukup panggil `setAddress()` kapan saja — bahkan setelah `begin()`:
 lcd.begin();          // LCD pertama, alamat dideteksi otomatis (auto-scan)
 lcd.setAddress(0x3F); // Ganti ke alamat lain, LCD otomatis di-reinit
 ```
+
+## ⚡ Fitur Non-Blocking (v1.1.0+)
+Untuk efek animasi (typewriter, scroll teks, backlight timeout) tanpa memblokir
+`loop()` Anda, panggil `lcd.update()` **satu kali di setiap `loop()`**:
+
+```cpp
+#include <IskakINO_LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(16, 2);
+
+void setup() {
+  lcd.begin();
+  lcd.setBacklightTimeout(15000); // backlight mati otomatis setelah 15 detik idle
+  lcd.typewriterStart("Hello IskakINO!", 0, 80);
+}
+
+void loop() {
+  lcd.update(); // WAJIB dipanggil tiap loop() untuk fitur non-blocking
+
+  // Kode lain Anda tetap bisa berjalan di sini tanpa terganggu delay()
+}
+```
+
+Fungsi non-blocking yang tersedia:
+| Fungsi | Deskripsi |
+|:---|:---|
+| `typewriterStart(text, row, delayTime)` | Mulai animasi mengetik non-blocking |
+| `typewriterStop()` / `isTypewriterActive()` | Hentikan / cek status animasi typewriter |
+| `scrollTextStart(text, row, intervalMs)` | Mulai teks berjalan otomatis (untuk teks > lebar layar) |
+| `scrollTextStop()` / `isScrollActive()` | Hentikan / cek status scroll |
+| `setBacklightTimeout(ms)` | Backlight mati otomatis setelah idle sekian ms (0 = nonaktif) |
+| `update()` | Wajib dipanggil tiap `loop()` untuk menjalankan fitur di atas |
+
 ----
 ## 📂 Showcase Examples
 Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. Anda dapat menemukan file-file ini di folder `examples/`.
@@ -118,14 +158,16 @@ Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. A
 | 02 | **[02_BlinkAndCursor](./examples/02_BlinkAndCursor)** | Mengontrol visual kursor (garis bawah) dan efek kedipan (blink). | ⭐ Basic |
 | 03 | **[03_ScrollAndBacklight](./examples/03_ScrollAndBacklight)** | Animasi teks berjalan ke samping dan kontrol daya lampu latar. | ⭐ Basic |
 | 04 | **[04_CustomCharacter](./examples/04_CustomCharacter)** | Cara menggambar simbol buatan sendiri (ikon hati, bel, dll). | ⭐⭐ Interm. |
-| 05 | **[05_ProgressBar](./examples/05_ProgressBar)** | Membuat animasi loading bar yang dinamis dan persentase. | ⭐⭐ Interm. |
+| 05 | **[05_ProgressBar](./examples/05_ProgressBar)** | Progress bar dinamis memakai fungsi built-in `drawProgressBar()`. | ⭐⭐ Interm. |
 | 06 | **[06_I2CScannerMode](./examples/06_I2CScannerMode)** | Menggunakan fungsi internal library untuk mendeteksi perangkat I2C lain. | ⭐⭐ Interm. |
 | 07 | **[07_DigitalClock](./examples/07_DigitalClock)** | Membuat jam digital akurat tanpa `delay()` menggunakan `millis()`. | ⭐⭐⭐ Advance |
 | 08 | **[08_MenuNavigation](./examples/08_MenuNavigation)** | Struktur menu multi-halaman untuk navigasi antarmuka pengguna (UI). | ⭐⭐⭐ Advance |
-| 09 | **[09_CustomI2CPins_ESP32](./examples/09_CustomI2CPins_ESP32)** | Konfigurasi pin SDA & SCL kustom untuk ESP32/ESP8266. | ⭐⭐⭐ Advance |
+| 09 | **[09_CustomI2CPins_ESP32](./examples/09_CustomI2CPins_ESP32)** | Konfigurasi pin SDA & SCL kustom untuk ESP32/ESP8266 (pakai `useExternalWireBegin()`). | ⭐⭐⭐ Advance |
 | 10 | **[10_LogoAnimation](./examples/10_LogoAnimation)** | Membuat animasi Splash Screen menggunakan gabungan teknik kustom. | ⭐⭐⭐ Advance |
 | **---** | **--- NEW IN v1.0.1 ---** | **-------------------------------------------------------** | **---** |
 | 11 | **[11_NewFeatures_v101](./examples/11_NewFeatures_v101)** | Demo fitur `printCenter`, `typewriter`, dan `isConnected`. | ⭐⭐ Interm. |
+| **---** | **--- NEW IN v1.1.0 ---** | **-------------------------------------------------------** | **---** |
+| 12 | **[12_NewFeatures_v110](./examples/12_NewFeatures_v110)** | Demo non-blocking typewriter, auto-scroll, progress bar, backlight timeout, printFormatted, dan preset ikon. | ⭐⭐⭐ Advance |
 
 ---
 ### 🚀 Cara Menjalankan Contoh
@@ -142,12 +184,14 @@ Library ini menyediakan pembelajaran bertahap dari tingkat dasar hingga mahir. A
 
 ## 📖 Dokumentasi API (API Reference)
 
-Berikut adalah daftar fungsi utama yang tersedia di **IskakINO_LiquidCrystal_I2C v1.0.1**.
+Berikut adalah daftar fungsi utama yang tersedia di **IskakINO_LiquidCrystal_I2C v1.1.0**.
 ### 1. Inisialisasi & Kontrol Dasar
 * **`begin()`**
     Inisialisasi LCD dan otomatis mencari alamat I2C (Auto-Scan). Tidak perlu memasukkan alamat secara manual.
 * **`backlight()` / `noBacklight()`**
     Menyalakan atau mematikan lampu latar (backlight) LCD.
+* **`setBacklightTimeout(unsigned long ms)`** *(v1.1.0)*
+    Backlight otomatis mati setelah idle sekian milidetik (0 = nonaktif). Butuh `update()` di `loop()`.
 * **`clear()`**
     Menghapus seluruh tampilan layar dan mereset posisi kursor ke pojok kiri atas (0,0).
 * **`setCursor(col, row)`**
@@ -156,17 +200,30 @@ Berikut adalah daftar fungsi utama yang tersedia di **IskakINO_LiquidCrystal_I2C
   Mengatur atau membaca alamat I2C LCD secara manual. Bisa dipanggil kapan saja —
   jika dipanggil **setelah** `begin()`, LCD akan otomatis di-reinit dengan alamat
   baru tanpa perlu memanggil `begin()` ulang secara manual.
-### 2. Fitur Cerdas (Smart UX - v1.0.1) ✨
+* **`static useExternalWireBegin()`** *(v1.1.0)*
+    Panggil setelah `Wire.begin(SDA, SCL)` manual dan sebelum `lcd.begin()`, supaya
+    library tidak menimpa konfigurasi pin custom Anda. Lihat contoh `09_CustomI2CPins_ESP32`.
+* **`update()`** *(v1.1.0)*
+    Wajib dipanggil sekali tiap `loop()` untuk menjalankan fitur non-blocking
+    (`typewriterStart`, `scrollTextStart`, `setBacklightTimeout`).
+
+### 2. Fitur Cerdas (Smart UX) ✨
 Fungsi-fungsi ini dirancang untuk mempermudah pembuatan antarmuka pengguna tanpa logika matematika yang rumit.
 | Fungsi | Parameter | Deskripsi |
 |:---|:---|:---|
-| **`printCenter`** | `(String text, int row)` | Menampilkan teks otomatis di tengah baris yang ditentukan. |
-| **`typewriter`** | `(String text, int row, int delayTime)` | Efek animasi mengetik. `delayTime` menentukan kecepatan (ms). |
+| **`printCenter`** | `(const char* / String text, int row)` | Menampilkan teks otomatis di tengah baris yang ditentukan. Overload `const char*` tersedia sejak v1.1.0 untuk hemat RAM. |
+| **`typewriter`** | `(const char* / String text, int row, int delayTime)` | Efek animasi mengetik versi **blocking** (perilaku lama, tetap didukung). |
+| **`typewriterStart` / `typewriterStop` / `isTypewriterActive`** *(v1.1.0)* | `(text, row, delayTime)` | Versi **non-blocking** dari `typewriter()`. Jalankan bersama `update()` di `loop()`. |
+| **`scrollTextStart` / `scrollTextStop` / `isScrollActive`** *(v1.1.0)* | `(text, row, intervalMs)` | Teks panjang berjalan otomatis secara horizontal, non-blocking. |
+| **`drawProgressBar`** *(v1.1.0)* | `(uint8_t percent, uint8_t row)` | Progress bar built-in 0–100%, memakai custom character slot 7. |
+| **`printFormatted`** *(v1.1.0)* | `(const char* format, ...)` | Print bergaya `printf`, contoh: `lcd.printFormatted("Suhu: %d C", 27);` |
 | **`isConnected`** | `None` | Mengembalikan `true` jika hardware LCD terdeteksi di jalur I2C. |
+
 ### 3. Custom Characters & Grafik
 Anda dapat membuat hingga 8 karakter buatan sendiri (ikon, logo, dll).
-* **`createChar(uint8_t location, uint8_t charmap[])`**: Menyimpan karakter ke memori LCD (index 0-7).
+* **`createChar(uint8_t location, uint8_t charmap[])`**: Menyimpan karakter ke memori LCD (index 0-7). *Catatan: slot 7 dicadangkan otomatis oleh `drawProgressBar()` jika fitur itu dipakai.*
 * **`write(uint8_t location)`**: Menampilkan karakter kustom yang telah disimpan.
+* **`IskakINO_LCD_Icons.h`** *(v1.1.0)*: Header opsional berisi preset ikon siap pakai (wifi, baterai, panah, lonceng, hati, check, cross, termometer, jam). Tinggal `#include <IskakINO_LCD_Icons.h>` lalu `lcd.createChar(slot, ICON_WIFI);` dsb.
 
 
 ---
@@ -179,7 +236,7 @@ Untuk memastikan library berjalan lancar, pastikan koneksi pin I2C sesuai dengan
 | **ESP32 (Wroom)** | GPIO21 | GPIO22 | 3.3V / 5V |
 
 > [!TIP]
-> **Khusus ESP32:** Jika Anda menggunakan pin I2C selain default, panggil `Wire.begin(SDA_PIN, SCL_PIN);` di dalam `setup()` sebelum memanggil `lcd.begin();`.
+> **Khusus ESP32:** Jika Anda menggunakan pin I2C selain default, panggil `Wire.begin(SDA_PIN, SCL_PIN);` di dalam `setup()`, lalu panggil `LiquidCrystal_I2C::useExternalWireBegin();`, baru kemudian panggil `lcd.begin();`. Lihat contoh `09_CustomI2CPins_ESP32`.
 
 ---
 ## 🔁 API Compatibility
@@ -211,7 +268,8 @@ Catatan: Panggilan API lama (Legacy) tetap berfungsi penuh tanpa memerlukan modi
 Library ini mengikuti standar **[Semantic Versioning](https://semver.org/)** (`MAJOR.MINOR.PATCH`).
 | Versi | Status | Deskripsi Perubahan |
 |:---:|:---:|:---|
-| **v1.0.3** | **Latest** | **Stability Fix**: `setAddress()` kini bisa dipanggil kapan saja (sebelum atau sesudah `begin()`) dan otomatis re-init LCD dengan alamat baru. Sebelumnya alamat baru diabaikan jika dipanggil setelah `begin()`. |
+| **v1.1.0** | **Latest** | **Non-Blocking & UX Update**: Typewriter & scroll text non-blocking (`typewriterStart`, `scrollTextStart`, `update()`), backlight auto-timeout, progress bar built-in, `printFormatted()`, overload `const char*`, preset ikon (`IskakINO_LCD_Icons.h`), dan inisialisasi multi-LCD yang lebih aman via `useExternalWireBegin()`. |
+| **v1.0.3** | Stable | **Stability Fix**: `setAddress()` kini bisa dipanggil kapan saja (sebelum atau sesudah `begin()`) dan otomatis re-init LCD dengan alamat baru. Sebelumnya alamat baru diabaikan jika dipanggil setelah `begin()`. |
 | **v1.0.1** | Stable | **Smart UX Update**: Penambahan fungsi `printCenter()`, `typewriter()`, `isConnected()`, dan perbaikan stabilitas compile pada ESP8266. |
 | **v1.0.0** | Stable | **Initial Release**: Fitur Auto-Address, dukungan karakter kustom, dan kompatibilitas penuh dengan API LiquidCrystal_I2C standar. |
 ### ✅ Komitmen Stabilitas

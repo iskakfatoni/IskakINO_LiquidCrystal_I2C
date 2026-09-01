@@ -2,12 +2,19 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Print.h>
+#include <stdarg.h>
 
 /* =========================================================
    Compile-time configuration
 ========================================================= */
 #ifndef LCD_ENABLE_SERIAL_DEBUG
 #define LCD_ENABLE_SERIAL_DEBUG 0
+#endif
+
+// Ukuran buffer internal untuk printFormatted(). Bisa di-override
+// sebelum #include jika butuh string lebih panjang.
+#ifndef LCD_PRINTF_BUFFER_SIZE
+#define LCD_PRINTF_BUFFER_SIZE 40
 #endif
 
 /* =========================================================
@@ -68,6 +75,12 @@
 #define LCD_MOVELEFT 0x00
 
 /* =========================================================
+   Reserved custom-character slots
+   (0-7 tersedia di HD44780; slot 7 dipakai internal utk progress bar)
+========================================================= */
+#define LCD_PROGRESSBAR_CHAR_LOC 7
+
+/* =========================================================
    Class Definition
 ========================================================= */
 class LiquidCrystal_I2C : public Print {
@@ -92,7 +105,12 @@ public:
     void backlight();
     void noBacklight();
 
-    /* Scrolling */
+    // FITUR #3 (v1.1.0): Auto-off backlight setelah idle sekian ms.
+    // 0 = nonaktif (default). Aktivitas dihitung dari setiap write()/print().
+    // WAJIB panggil update() di loop() supaya timer ini berjalan.
+    void setBacklightTimeout(unsigned long timeoutMs);
+
+    /* Scrolling (bawaan HD44780 - geser seluruh display) */
     void scrollDisplayLeft();
     void scrollDisplayRight();
     void leftToRight();
@@ -101,9 +119,8 @@ public:
     void noAutoscroll();
 
     /* Address control */
-    // FIX #2: setAddress() sekarang bisa dipanggil kapan saja.
-    // Kalau dipanggil setelah begin() sudah jalan, LCD otomatis
-    // di-reinit dengan alamat baru (tidak lagi "terkunci").
+    // Bisa dipanggil kapan saja. Jika dipanggil setelah begin(),
+    // LCD otomatis di-reinit dengan alamat baru.
     void setAddress(uint8_t addr);
     uint8_t getAddress() const;
 
@@ -113,9 +130,48 @@ public:
     /* Print override */
     virtual size_t write(uint8_t);
 
-    // --- Tambahkan di bawah fungsi print standar ---
-    void printCenter(String text, int row);
-    void typewriter(String text, int row, int delayTime = 100);
+    /* ===================== Text Helpers ===================== */
+    // FITUR #2 (v1.1.0): overload const char* di samping String,
+    // supaya bisa pakai string literal langsung tanpa alokasi String
+    // (lebih hemat RAM di board kecil seperti Uno/Nano).
+    void printCenter(const char* text, int row);
+    void printCenter(const String& text, int row);
+
+    // Versi BLOCKING (perilaku lama, dipertahankan untuk backward compatibility)
+    void typewriter(const char* text, int row, int delayTime = 100);
+    void typewriter(const String& text, int row, int delayTime = 100);
+
+    /* ================ FITUR #1 (v1.1.0): Non-blocking typewriter ================
+       Pola pemakaian:
+         lcd.typewriterStart("Hello World", 0);
+         // di loop():
+         lcd.update();
+    ================================================================= */
+    void typewriterStart(const char* text, int row, int delayTime = 100);
+    void typewriterStart(const String& text, int row, int delayTime = 100);
+    void typewriterStop();
+    bool isTypewriterActive() const;
+
+    /* ================ FITUR #4 (v1.1.0): Auto horizontal scroll text ================
+       Untuk teks yang lebih panjang dari lebar layar (mis. nama lagu, status panjang).
+       Non-blocking, jalan lewat update().
+    ================================================================= */
+    void scrollTextStart(const char* text, int row, uint16_t intervalMs = 300);
+    void scrollTextStart(const String& text, int row, uint16_t intervalMs = 300);
+    void scrollTextStop();
+    bool isScrollActive() const;
+
+    // Panggil sekali tiap loop() — menjalankan timer non-blocking untuk
+    // typewriterStart(), scrollTextStart(), dan setBacklightTimeout().
+    void update();
+
+    /* FITUR #5 (v1.1.0): Progress bar built-in (0-100%) */
+    void drawProgressBar(uint8_t percent, uint8_t row);
+
+    /* FITUR #7 (v1.1.0): printf-style formatted print
+       Contoh: lcd.printFormatted("Suhu: %d C", suhu); */
+    void printFormatted(const char* format, ...);
+
     bool isConnected(); // Fitur cek koneksi hardware
 
 private:
@@ -125,6 +181,8 @@ private:
     void _pulseEnable(uint8_t data);
     void _expanderWrite(uint8_t data);
     void _scanAddress();
+    void _printCenterImpl(const char* text, int row);
+    void _typewriterBlockingImpl(const char* text, int row, int delayTime);
 #ifndef ISKAKINO_NO_SPLASH
     void _showSplashScreen();
 #endif
@@ -137,4 +195,39 @@ private:
     uint8_t _displayfunction;
     uint8_t _displaycontrol;
     uint8_t _displaymode;
+
+    // FITUR #6 (v1.1.0): status inisialisasi bus I2C dibuat static (per-class,
+    // bukan per-instance) supaya kalau ada beberapa objek LCD (multi-LCD di
+    // satu bus I2C dengan alamat berbeda), Wire.begin() cuma dipanggil SEKALI.
+    // Ini mencegah re-init bus menimpa konfigurasi pin custom (SDA/SCL) dari
+    // instance pertama.
+    static bool _wireInitialized;
+
+public:
+    // FITUR TAMBAHAN (fix regresi v1.1.0): panggil method ini SETELAH kamu
+    // memanggil Wire.begin(SDA, SCL) sendiri secara manual (mis. custom pin
+    // di ESP32/ESP8266), dan SEBELUM lcd.begin(). Ini memberi tahu library
+    // supaya tidak memanggil Wire.begin() versi default lagi di dalam begin(),
+    // yang kalau tidak dicegah akan menimpa konfigurasi pin custom kamu.
+    //
+    // Contoh:
+    //   Wire.begin(18, 19);
+    //   LiquidCrystal_I2C::useExternalWireBegin();
+    //   lcd.begin();
+    static void useExternalWireBegin();
+private:
+
+    // --- State non-blocking (FITUR #1, #3, #4) ---
+    String _twBuffer;          // penyimpan teks aktif untuk typewriter/scroll
+    uint8_t _twIndex;
+    uint8_t _twRow;
+    uint16_t _twIntervalMs;
+    unsigned long _twLastMillis;
+    bool _twActive;
+    bool _twIsScrollMode;      // true = mode scrollText, false = mode typewriter
+
+    unsigned long _backlightTimeoutMs;   // 0 = nonaktif
+    unsigned long _lastActivityMillis;
+
+    bool _progressBarReady;
 };

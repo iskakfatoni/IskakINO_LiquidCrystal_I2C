@@ -35,6 +35,12 @@ void setup() {
 }
 
 void loop() {
+  // Hanya jalankan demo jika LCD terhubung
+  if (!lcd.isConnected()) {
+    delay(1000);
+    return;
+  }
+
   // Demo loop: Berkedip di tengah
   delay(2000);
   lcd.clear();

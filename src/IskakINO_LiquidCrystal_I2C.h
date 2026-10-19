@@ -4,6 +4,12 @@
 #include <Print.h>
 #include <stdarg.h>
 
+#if defined(__AVR__)
+#include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 /* =========================================================
    Compile-time configuration
 ========================================================= */
@@ -20,11 +26,22 @@
 /* =========================================================
    PCF8574 Pin Mapping
 ========================================================= */
-#define En 0b00000100
-#define Rw 0b00000010
-#define Rs 0b00000001
+#define LCD_EN 0b00000100
+#define LCD_RW 0b00000010
+#define LCD_RS 0b00000001
 #define LCD_BACKLIGHT 0x08
 #define LCD_NOBACKLIGHT 0x00
+
+// Aliases for backward compatibility
+#ifndef En
+#define En LCD_EN
+#endif
+#ifndef Rw
+#define Rw LCD_RW
+#endif
+#ifndef Rs
+#define Rs LCD_RS
+#endif
 
 /* =========================================================
    HD44780 Commands
@@ -86,9 +103,10 @@
 class LiquidCrystal_I2C : public Print {
 public:
     LiquidCrystal_I2C(uint8_t cols, uint8_t rows);
+    LiquidCrystal_I2C(uint8_t addr, uint8_t cols, uint8_t rows);
 
     /* Basic control */
-    void begin();
+    bool begin();
     void clear();
     void home();
     void setCursor(uint8_t col, uint8_t row);
@@ -105,7 +123,7 @@ public:
     void backlight();
     void noBacklight();
 
-    // FITUR #3 (v1.1.0): Auto-off backlight setelah idle sekian ms.
+    // Auto-off backlight setelah idle sekian ms.
     // 0 = nonaktif (default). Aktivitas dihitung dari setiap write()/print().
     // WAJIB panggil update() di loop() supaya timer ini berjalan.
     void setBacklightTimeout(unsigned long timeoutMs);
@@ -126,22 +144,26 @@ public:
 
     /* Custom character */
     void createChar(uint8_t location, const uint8_t charmap[]);
+    void createChar_P(uint8_t location, const uint8_t charmap[]);
+
+    /* Custom I2C bus selection (e.g., Wire1 on ESP32/STM32/Mega) */
+    void setWire(TwoWire* wire);
+
+    /* Splash screen runtime control */
+    void enableSplashScreen(bool enable = true);
 
     /* Print override */
     virtual size_t write(uint8_t);
 
     /* ===================== Text Helpers ===================== */
-    // FITUR #2 (v1.1.0): overload const char* di samping String,
-    // supaya bisa pakai string literal langsung tanpa alokasi String
-    // (lebih hemat RAM di board kecil seperti Uno/Nano).
     void printCenter(const char* text, int row);
     void printCenter(const String& text, int row);
 
-    // Versi BLOCKING (perilaku lama, dipertahankan untuk backward compatibility)
+    // Versi BLOCKING (dipertahankan untuk backward compatibility)
     void typewriter(const char* text, int row, int delayTime = 100);
     void typewriter(const String& text, int row, int delayTime = 100);
 
-    /* ================ FITUR #1 (v1.1.0): Non-blocking typewriter ================
+    /* ================ Non-blocking typewriter ================
        Pola pemakaian:
          lcd.typewriterStart("Hello World", 0);
          // di loop():
@@ -152,8 +174,8 @@ public:
     void typewriterStop();
     bool isTypewriterActive() const;
 
-    /* ================ FITUR #4 (v1.1.0): Auto horizontal scroll text ================
-       Untuk teks yang lebih panjang dari lebar layar (mis. nama lagu, status panjang).
+    /* ================ Auto horizontal scroll text ================
+       Untuk teks yang lebih panjang dari lebar layar.
        Non-blocking, jalan lewat update().
     ================================================================= */
     void scrollTextStart(const char* text, int row, uint16_t intervalMs = 300);
@@ -165,11 +187,12 @@ public:
     // typewriterStart(), scrollTextStart(), dan setBacklightTimeout().
     void update();
 
-    /* FITUR #5 (v1.1.0): Progress bar built-in (0-100%) */
+    /* Progress bar built-in (0-100%) */
     void drawProgressBar(uint8_t percent, uint8_t row);
 
-    /* FITUR #7 (v1.1.0): printf-style formatted print
-       Contoh: lcd.printFormatted("Suhu: %d C", suhu); */
+    /* printf-style formatted print
+       Contoh: lcd.printFormatted("Suhu: %d C", suhu);
+       Catatan: AVR libc tidak mendukung %f tanpa konfigurasi linker khusus. */
     void printFormatted(const char* format, ...);
 
     bool isConnected(); // Fitur cek koneksi hardware
@@ -183,9 +206,7 @@ private:
     void _scanAddress();
     void _printCenterImpl(const char* text, int row);
     void _typewriterBlockingImpl(const char* text, int row, int delayTime);
-#ifndef ISKAKINO_NO_SPLASH
     void _showSplashScreen();
-#endif
 
     uint8_t _cols;
     uint8_t _rows;
@@ -195,29 +216,16 @@ private:
     uint8_t _displayfunction;
     uint8_t _displaycontrol;
     uint8_t _displaymode;
+    TwoWire* _wire;
+    bool _showSplash;
 
-    // FITUR #6 (v1.1.0): status inisialisasi bus I2C dibuat static (per-class,
-    // bukan per-instance) supaya kalau ada beberapa objek LCD (multi-LCD di
-    // satu bus I2C dengan alamat berbeda), Wire.begin() cuma dipanggil SEKALI.
-    // Ini mencegah re-init bus menimpa konfigurasi pin custom (SDA/SCL) dari
-    // instance pertama.
     static bool _wireInitialized;
 
 public:
-    // FITUR TAMBAHAN (fix regresi v1.1.0): panggil method ini SETELAH kamu
-    // memanggil Wire.begin(SDA, SCL) sendiri secara manual (mis. custom pin
-    // di ESP32/ESP8266), dan SEBELUM lcd.begin(). Ini memberi tahu library
-    // supaya tidak memanggil Wire.begin() versi default lagi di dalam begin(),
-    // yang kalau tidak dicegah akan menimpa konfigurasi pin custom kamu.
-    //
-    // Contoh:
-    //   Wire.begin(18, 19);
-    //   LiquidCrystal_I2C::useExternalWireBegin();
-    //   lcd.begin();
     static void useExternalWireBegin();
 private:
 
-    // --- State non-blocking (FITUR #1, #3, #4) ---
+    // --- State non-blocking ---
     String _twBuffer;          // penyimpan teks aktif untuk typewriter/scroll
     uint8_t _twIndex;
     uint8_t _twRow;

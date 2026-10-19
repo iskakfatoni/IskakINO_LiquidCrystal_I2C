@@ -1,6 +1,14 @@
 #pragma once
 #include <Arduino.h>
 
+#if defined(__AVR__)
+#include <avr/pgmspace.h>
+#define LCD_ICON_ATTR PROGMEM
+#else
+#include <pgmspace.h>
+#define LCD_ICON_ATTR
+#endif
+
 /* =========================================================================
    IskakINO_LCD_Icons.h
 
@@ -11,12 +19,15 @@
    internal oleh fitur drawProgressBar() di IskakINO_LiquidCrystal_I2C, jadi
    HINDARI createChar(7, ...) kalau kamu juga pakai drawProgressBar().
 
+   Ikon disimpan di Flash (PROGMEM) untuk menghemat SRAM pada mikrokontroler
+   kecil seperti Arduino Uno/Nano (ATmega328P).
+
    Cara pakai:
      #include <IskakINO_LiquidCrystal_I2C.h>
      #include <IskakINO_LCD_Icons.h>
 
-     lcd.createChar(0, ICON_WIFI);
-     lcd.createChar(1, ICON_BATTERY_FULL);
+     lcd.createChar_P(0, ICON_WIFI);
+     lcd.createChar_P(1, ICON_BATTERY_FULL);
      ...
      lcd.setCursor(0, 0);
      lcd.write((uint8_t)0);  // tampilkan ikon wifi di slot 0
@@ -24,7 +35,7 @@
 ========================================================================= */
 
 // Wi-Fi
-static const uint8_t ICON_WIFI[8] = {
+static const uint8_t ICON_WIFI[8] LCD_ICON_ATTR = {
     0b00000,
     0b01110,
     0b10001,
@@ -36,7 +47,7 @@ static const uint8_t ICON_WIFI[8] = {
 };
 
 // Baterai penuh
-static const uint8_t ICON_BATTERY_FULL[8] = {
+static const uint8_t ICON_BATTERY_FULL[8] LCD_ICON_ATTR = {
     0b01110,
     0b11111,
     0b11111,
@@ -48,7 +59,7 @@ static const uint8_t ICON_BATTERY_FULL[8] = {
 };
 
 // Baterai kosong
-static const uint8_t ICON_BATTERY_EMPTY[8] = {
+static const uint8_t ICON_BATTERY_EMPTY[8] LCD_ICON_ATTR = {
     0b01110,
     0b11111,
     0b10001,
@@ -60,7 +71,7 @@ static const uint8_t ICON_BATTERY_EMPTY[8] = {
 };
 
 // Panah atas
-static const uint8_t ICON_ARROW_UP[8] = {
+static const uint8_t ICON_ARROW_UP[8] LCD_ICON_ATTR = {
     0b00100,
     0b01110,
     0b10101,
@@ -72,7 +83,7 @@ static const uint8_t ICON_ARROW_UP[8] = {
 };
 
 // Panah bawah
-static const uint8_t ICON_ARROW_DOWN[8] = {
+static const uint8_t ICON_ARROW_DOWN[8] LCD_ICON_ATTR = {
     0b00100,
     0b00100,
     0b00100,
@@ -84,7 +95,7 @@ static const uint8_t ICON_ARROW_DOWN[8] = {
 };
 
 // Lonceng / notifikasi
-static const uint8_t ICON_BELL[8] = {
+static const uint8_t ICON_BELL[8] LCD_ICON_ATTR = {
     0b00100,
     0b01110,
     0b01110,
@@ -96,7 +107,7 @@ static const uint8_t ICON_BELL[8] = {
 };
 
 // Hati
-static const uint8_t ICON_HEART[8] = {
+static const uint8_t ICON_HEART[8] LCD_ICON_ATTR = {
     0b00000,
     0b01010,
     0b11111,
@@ -108,7 +119,7 @@ static const uint8_t ICON_HEART[8] = {
 };
 
 // Centang / check
-static const uint8_t ICON_CHECK[8] = {
+static const uint8_t ICON_CHECK[8] LCD_ICON_ATTR = {
     0b00000,
     0b00001,
     0b00011,
@@ -120,7 +131,7 @@ static const uint8_t ICON_CHECK[8] = {
 };
 
 // Silang / cross
-static const uint8_t ICON_CROSS[8] = {
+static const uint8_t ICON_CROSS[8] LCD_ICON_ATTR = {
     0b00000,
     0b10001,
     0b01010,
@@ -132,7 +143,7 @@ static const uint8_t ICON_CROSS[8] = {
 };
 
 // Simbol derajat (°) — berguna untuk tampilan suhu
-static const uint8_t ICON_DEGREE[8] = {
+static const uint8_t ICON_DEGREE[8] LCD_ICON_ATTR = {
     0b01100,
     0b10010,
     0b10010,
@@ -144,7 +155,7 @@ static const uint8_t ICON_DEGREE[8] = {
 };
 
 // Termometer
-static const uint8_t ICON_THERMOMETER[8] = {
+static const uint8_t ICON_THERMOMETER[8] LCD_ICON_ATTR = {
     0b00100,
     0b01010,
     0b01010,
@@ -156,7 +167,7 @@ static const uint8_t ICON_THERMOMETER[8] = {
 };
 
 // Jam/waktu
-static const uint8_t ICON_CLOCK[8] = {
+static const uint8_t ICON_CLOCK[8] LCD_ICON_ATTR = {
     0b00000,
     0b01110,
     0b10101,

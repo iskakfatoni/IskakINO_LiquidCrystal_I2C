@@ -27,9 +27,9 @@ void setup() {
   // FITUR #3: backlight otomatis mati setelah 15 detik idle
   lcd.setBacklightTimeout(15000);
 
-  // FITUR #12: daftarkan beberapa ikon (hindari slot 7, dipakai progress bar)
-  lcd.createChar(0, ICON_THERMOMETER);
-  lcd.createChar(1, ICON_WIFI);
+  // FITUR #12: daftarkan beberapa ikon via createChar_P (hemat SRAM pada AVR)
+  lcd.createChar_P(0, ICON_THERMOMETER);
+  lcd.createChar_P(1, ICON_WIFI);
 
   // FITUR #1: mulai animasi typewriter non-blocking
   lcd.clear();
@@ -40,7 +40,12 @@ void loop() {
   // WAJIB dipanggil setiap loop() untuk fitur non-blocking (#1, #3, #4)
   lcd.update();
 
-  // Ganti demo tiap 4 detik setelah typewriter pertama selesai
+  // Hentikan scroll otomatis setelah 6 detik agar demo bisa lanjut ke stage berikutnya
+  if (lcd.isScrollActive() && (millis() - lastDemoSwitch > 6000)) {
+    lcd.scrollTextStop();
+  }
+
+  // Ganti demo tiap 4 detik setelah animasi selesai
   if (!lcd.isTypewriterActive() && !lcd.isScrollActive()
       && millis() - lastDemoSwitch > 4000) {
 

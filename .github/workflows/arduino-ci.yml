@@ -73,7 +73,7 @@ jobs:
           for example in $(find examples -name "*.ino"); do
             
             # Skip contoh spesifik ESP32 jika board bukan ESP32
-            if [[ "$example" == *ESP32_Custom_I2C_Pins* ]] && [[ "${{ matrix.board }}" != "esp32:esp32:esp32" ]]; then
+            if [[ "$example" == *09_CustomI2CPins_ESP32* ]] && [[ "${{ matrix.board }}" != "esp32:esp32:esp32" ]]; then
               echo "Skipping $example (ESP32 only)"
               continue
             fi

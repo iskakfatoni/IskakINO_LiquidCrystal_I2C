@@ -49,8 +49,8 @@ void setup() {
 
   // 2. Tampilkan Logo "I" Besar (Menggunakan Custom Char)
   // Baris Atas
-  lcd.setCursor(7, 0); lcd.write(1); // Top bar
-  lcd.setCursor(7, 1); lcd.write(2); // Bot bar
+  lcd.setCursor(7, 0); lcd.write((uint8_t)1); // Top bar
+  lcd.setCursor(7, 1); lcd.write((uint8_t)2); // Bot bar
   
   // Efek kedip logo
   for(int i=0; i<3; i++) {
@@ -83,4 +83,5 @@ void loop() {
   lcd.print("System Running..");
   lcd.setCursor(0, 1);
   lcd.print("Mode: Standby   ");
+  delay(1000);
 }

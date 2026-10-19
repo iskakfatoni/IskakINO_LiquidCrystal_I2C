@@ -47,11 +47,11 @@ void setup() {
   // Menampilkan karakter menggunakan fungsi write()
   lcd.setCursor(0, 1);
   lcd.print("Love ");
-  lcd.write(0); // Menampilkan Heart
+  lcd.write((uint8_t)0); // Menampilkan Heart
   
   lcd.setCursor(8, 1);
   lcd.print("Bell ");
-  lcd.write(1); // Menampilkan Bell
+  lcd.write((uint8_t)1); // Menampilkan Bell
 }
 
 void loop() {
@@ -60,6 +60,6 @@ void loop() {
   lcd.print(" ");
   delay(500);
   lcd.setCursor(5, 1);
-  lcd.write(0);
+  lcd.write((uint8_t)0);
   delay(500);
 }
